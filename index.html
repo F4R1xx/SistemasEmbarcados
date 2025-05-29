@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alarme Futurista - MQTT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+  <link rel="icon" type="image/png" href="icon.png">
+</head>
+<body>
+  <div id="container" role="main" aria-label="Sistema de Alarme Futurista">
+    <h1 style="color:#00ffc8; text-align:center; font-weight:700; font-family:'Orbitron', monospace; text-transform: uppercase; letter-spacing: 0.25em; margin-bottom: 20px; user-select:none;">
+      ALARME ANTIFURTO
+    </h1>
+    <div id="status-section">
+      <svg id="holo-shield" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="Ícone de escudo holográfico" role="img">
+        <defs>
+          <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00ffcc" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#004466" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+            <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#00ffc8" flood-opacity="0.8"/>
+            <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#00ffc8" flood-opacity="0.5"/>
+          </filter>
+        </defs>
+        <path id="shieldPath" d="M100 10 L140 50 L140 110 L100 150 L60 110 L60 50 Z" fill="url(#glowGradient)" filter="url(#glow)" />
+        <path d="M100 20 L130 50 L130 100 L100 140 L70 100 L70 50 Z" fill="none" stroke="#00ffc8" stroke-width="3" />
+      </svg>
+      <div id="status-text" aria-live="polite" aria-atomic="true">DESATIVADO</div>
+    </div>
+    <div id="controls">
+      <button id="btn-ativar" aria-label="Ativar sistema">Ativar Sistema</button>
+      <button id="btn-desativar" aria-label="Desativar sistema">Desativar Sistema</button>
+      <button id="btn-toggle-log" aria-expanded="false" aria-controls="violations-log">Mostrar Log de Violações</button>
+      <button id="btn-export" aria-label="Exportar log">Exportar Log</button>
+    </div>
+    <div id="violations-log" role="log" aria-live="polite" aria-atomic="false" hidden></div>
+    <canvas id="ripple-canvas"></canvas>
+  </div>
+  <audio id="sound-ativado" src="sounds/ativado.wav" preload="auto"></audio>
+  <audio id="sound-desativado" src="sounds/desativado.wav" preload="auto"></audio>
+  <audio id="sound-alarme" src="sounds/alarme.wav" preload="auto"></audio>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

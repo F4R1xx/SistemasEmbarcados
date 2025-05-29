@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0; padding: 0; height: 100%;
+  background: linear-gradient(135deg, #001f2f, #004466);
+  font-family: 'Orbitron', monospace, sans-serif;
+  color: #00ffc8;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+}
+
+/* Fundo animado com linhas de neon horizontais */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 200, 0.05),
+    rgba(0, 255, 200, 0.05) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  animation: slideLines 10s linear infinite;
+  z-index: 0;
+}
+
+@keyframes slideLines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 20px; }
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  position: relative;
+  overflow: visible;
+}
+
+/* Status Section */
+#status-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  text-align: center;
+  user-select: none;
+  z-index: 10;
+  position: relative;
+}
+
+/* Holo Shield com animação e brilho */
+#holo-shield {
+  width: 220px;
+  height: 220px;
+  filter: drop-shadow(0 0 15px #00ffc8);
+  transition: transform 0.8s ease, filter 0.8s ease;
+  cursor: default;
+  animation: holoRotate 8s linear infinite;
+  will-change: transform, filter;
+}
+
+.ligado #holo-shield {
+  animation: holoPulse 3s infinite alternate, holoRotate 8s linear infinite;
+  filter: drop-shadow(0 0 25px #00ffcc) drop-shadow(0 0 40px #00ffcc);
+  transform: scale(1.1) rotateY(15deg);
+}
+
+.desligado #holo-shield {
+  filter: drop-shadow(0 0 10px #006666);
+  opacity: 0.5;
+  transform: scale(0.9);
+  animation: holoRotate 20s linear infinite reverse;
+}
+
+/* Animações holográficas */
+@keyframes holoPulse {
+  0% {
+    filter: drop-shadow(0 0 25px #00ffcc) drop-shadow(0 0 40px #00ffcc);
+    transform: scale(1.1) rotateY(15deg);
+  }
+  100% {
+    filter: drop-shadow(0 0 50px #00ffcc) drop-shadow(0 0 80px #00ffcc);
+    transform: scale(1.2) rotateY(-15deg);
+  }
+}
+
+@keyframes holoRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg);}
+}
+
+#status-text {
+  font-size: 4rem;
+  margin-top: 30px;
+  text-shadow:
+    0 0 10px #00ffc8,
+    0 0 20px #00ffc8,
+    0 0 40px #00ffc8,
+    0 0 80px #00ffc8;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* Botões futuristas */
+#controls {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 30px;
+  z-index: 10;
+}
+
+#controls button {
+  background: linear-gradient(145deg, #00ffd8, #00a3b1);
+  border: none;
+  color: #002b2b;
+  font-size: 1.1rem;
+  padding: 14px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  box-shadow:
+    0 0 8px #00ffc8,
+    inset 0 0 15px #00e6c7;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  user-select: none;
+  text-transform: uppercase;
+  filter: drop-shadow(0 0 8px #00ffc8);
+}
+
+#controls button:hover {
+  background: linear-gradient(145deg, #00e6c7, #008d99);
+  color: #00ffc8;
+  box-shadow:
+    0 0 20px #00ffc8,
+    inset 0 0 25px #00ffc8,
+    0 0 40px #00ffc8;
+  outline: none;
+  transform: scale(1.05);
+}
+
+/* Log de violações */
+#violations-log {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 350px;
+  height: 100vh;
+  background: rgba(0, 255, 200, 0.15);
+  backdrop-filter: blur(14px);
+  border-left: 2px solid #00ffc8;
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  user-select: text;
+  color: #00ffcc;
+  box-shadow: -5px 0 25px rgba(0,255,200,0.5);
+  display: none;
+  z-index: 30;
+  font-family: 'Orbitron', monospace, sans-serif;
+}
+
+.log-entry {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  border-left: 4px solid #00ffcc;
+  background: rgba(0, 255, 200, 0.08);
+  transition: background-color 0.3s ease;
+}
+
+.log-entry:hover {
+  background-color: rgba(0, 255, 200, 0.18);
+}
+
+.log-entry .time {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #00ddaa;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Ripple Canvas */
+canvas#ripple-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 25;
+  display: none;
+  mix-blend-mode: screen;
+}
+
+/* Efeito glitch leve no status-text quando ligado */
+.ligado #status-text {
+  animation: glitch 1.5s infinite;
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow:
+      2px 0 #00ffc8,
+      -2px 0 #00ffea;
+  }
+  20% {
+    text-shadow:
+      -2px 0 #00ffc8,
+      2px 0 #00ffea;
+  }
+  40% {
+    text-shadow:
+      2px 2px #00ffc8,
+      -2px -2px #00ffea;
+  }
+  60% {
+    text-shadow:
+      -2px 2px #00ffc8,
+      2px -2px #00ffea;
+  }
+  80% {
+    text-shadow:
+      2px 0 #00ffc8,
+      -2px 0 #00ffea;
+  }
+  100% {
+    text-shadow:
+      -2px 0 #00ffc8,
+      2px 0 #00ffea;
+  }
+}
+
+/* Botão ativo com pulso */
+#controls button.btn-active {
+  box-shadow:
+    0 0 25px #00ffc8,
+    inset 0 0 40px #00ffc8;
+  animation: btnPulse 2s infinite alternate;
+  color: #002b2b;
+  background: linear-gradient(145deg, #00ffd8, #00a3b1);
+}
+
+@keyframes btnPulse {
+  0% {
+    box-shadow:
+      0 0 20px #00ffc8,
+      inset 0 0 30px #00ffc8;
+    transform: scale(1);
+  }
+  100% {
+    box-shadow:
+      0 0 40px #00ffc8,
+      inset 0 0 50px #00ffc8;
+    transform: scale(1.05);
+  }
+}
