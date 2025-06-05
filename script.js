@@ -28,6 +28,19 @@ let isLogVisible = false;
 // Configura o cliente MQTT
 const client = new Paho.MQTT.Client(broker, port, clientId);
 
+// Ajuste do Keep Alive e reconexão
+client.connect({
+  onSuccess: () => {
+    console.log("Conectado ao broker");
+    client.subscribe(topicStatus);
+  },
+  useSSL: false,  // Teste sem SSL
+  keepAliveInterval: 60,  // Intervalo maior para manter a conexão
+  onFailure: (error) => {
+    console.log("Falha na conexão: ", error);
+  }
+});
+
 client.onConnectionLost = (responseObject) => {
   if (responseObject.errorCode !== 0) {
     console.log("Conexão perdida: " + responseObject.errorMessage);
@@ -57,14 +70,6 @@ client.onMessageArrived = (message) => {
     soundAlarme.play();
   }
 };
-
-client.connect({
-  onSuccess: () => {
-    console.log("Conectado ao broker");
-    client.subscribe(topicStatus);
-  },
-  useSSL: true
-});
 
 // Função para ativar o sistema
 btnAtivar.addEventListener("click", () => {
@@ -148,6 +153,20 @@ function showNotification(title, body) {
     });
   }
 }
+
+// Reconexão automática quando a página voltar a ser visível
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) {
+    console.log("Página visível novamente. Tentando reconectar...");
+    client.connect({
+      onSuccess: () => {
+        console.log("Reconectado ao broker");
+      },
+      useSSL: false, // Teste sem SSL
+      keepAliveInterval: 60, // Intervalo maior para manter a conexão
+    });
+  }
+});
 
 // Inicialização da animação do ripple
 let rippleCanvas, rippleCtx;
