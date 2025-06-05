@@ -28,6 +28,28 @@ let isLogVisible = false;
 // Configuração do cliente MQTT com Keep Alive maior
 const client = new Paho.MQTT.Client(broker, port, clientId);
 
+// Variável para controlar o número de tentativas de reconexão
+let reconnectAttempts = 0;
+
+// Função de reconexão
+function reconnectMQTT() {
+  console.log(`Tentando reconectar ao broker... Tentativa ${reconnectAttempts + 1}`);
+  client.connect({
+    onSuccess: () => {
+      console.log("Reconectado ao broker");
+      reconnectAttempts = 0; // Reseta a contagem de tentativas de reconexão
+      client.subscribe(topicStatus);
+    },
+    onFailure: (error) => {
+      console.log(`Falha na reconexão: ${error.errorMessage}`);
+      reconnectAttempts++;
+      setTimeout(reconnectMQTT, 5000); // Tenta reconectar a cada 5 segundos
+    },
+    useSSL: true,
+    keepAliveInterval: 60 // Intervalo de keep alive aumentado
+  });
+}
+
 // Conexão perdida
 client.onConnectionLost = (responseObject) => {
   if (responseObject.errorCode !== 0) {
@@ -35,8 +57,7 @@ client.onConnectionLost = (responseObject) => {
     statusText.textContent = "Conexão perdida";
     container.classList.remove("ligado");
     container.classList.add("desligado");
-    // Tentativa de reconectar
-    reconnectMQTT();
+    reconnectMQTT(); // Inicia o processo de reconexão
   }
 };
 
@@ -61,18 +82,6 @@ client.onMessageArrived = (message) => {
     soundAlarme.play();
   }
 };
-
-// Função de reconexão
-function reconnectMQTT() {
-  client.connect({
-    onSuccess: () => {
-      console.log("Reconectado ao broker");
-      client.subscribe(topicStatus);
-    },
-    useSSL: true,
-    keepAliveInterval: 60 // Intervalo de keep alive aumentado
-  });
-}
 
 // Conectar ao MQTT
 client.connect({
