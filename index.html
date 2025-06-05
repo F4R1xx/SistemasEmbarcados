@@ -36,7 +36,10 @@
       <button id="btn-toggle-log" aria-expanded="false" aria-controls="violations-log">Mostrar Log de Violações</button>
       <button id="btn-export" aria-label="Exportar log">Exportar Log</button>
     </div>
-    <div id="violations-log" role="log" aria-live="polite" aria-atomic="false" hidden></div>
+    <div id="violations-log" role="log" aria-live="polite" aria-atomic="false" hidden>
+      <button id="btn-close-log" aria-label="Fechar log de violações">×</button>
+      <!-- Conteúdo do log de violações será adicionado dinamicamente -->
+    </div>
     <canvas id="ripple-canvas"></canvas>
   </div>
   <audio id="sound-ativado" src="sounds/ativado.wav" preload="auto"></audio>
