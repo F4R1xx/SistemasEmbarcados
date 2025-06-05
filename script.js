@@ -25,31 +25,22 @@ const soundAlarme = document.getElementById("sound-alarme");
 let violations = [];
 let isLogVisible = false;
 
-// Configura o cliente MQTT
+// Configuração do cliente MQTT com Keep Alive maior
 const client = new Paho.MQTT.Client(broker, port, clientId);
 
-// Ajuste do Keep Alive e reconexão
-client.connect({
-  onSuccess: () => {
-    console.log("Conectado ao broker");
-    client.subscribe(topicStatus);
-  },
-  useSSL: false,  // Teste sem SSL
-  keepAliveInterval: 60,  // Intervalo maior para manter a conexão
-  onFailure: (error) => {
-    console.log("Falha na conexão: ", error);
-  }
-});
-
+// Conexão perdida
 client.onConnectionLost = (responseObject) => {
   if (responseObject.errorCode !== 0) {
     console.log("Conexão perdida: " + responseObject.errorMessage);
     statusText.textContent = "Conexão perdida";
     container.classList.remove("ligado");
     container.classList.add("desligado");
+    // Tentativa de reconectar
+    reconnectMQTT();
   }
 };
 
+// Mensagens recebidas
 client.onMessageArrived = (message) => {
   const payload = message.payloadString;
   console.log("Mensagem recebida:", payload);
@@ -70,6 +61,28 @@ client.onMessageArrived = (message) => {
     soundAlarme.play();
   }
 };
+
+// Função de reconexão
+function reconnectMQTT() {
+  client.connect({
+    onSuccess: () => {
+      console.log("Reconectado ao broker");
+      client.subscribe(topicStatus);
+    },
+    useSSL: true,
+    keepAliveInterval: 60 // Intervalo de keep alive aumentado
+  });
+}
+
+// Conectar ao MQTT
+client.connect({
+  onSuccess: () => {
+    console.log("Conectado ao broker");
+    client.subscribe(topicStatus);
+  },
+  useSSL: true,
+  keepAliveInterval: 60 // Intervalo de keep alive aumentado
+});
 
 // Função para ativar o sistema
 btnAtivar.addEventListener("click", () => {
@@ -154,20 +167,6 @@ function showNotification(title, body) {
   }
 }
 
-// Reconexão automática quando a página voltar a ser visível
-document.addEventListener("visibilitychange", function() {
-  if (!document.hidden) {
-    console.log("Página visível novamente. Tentando reconectar...");
-    client.connect({
-      onSuccess: () => {
-        console.log("Reconectado ao broker");
-      },
-      useSSL: false, // Teste sem SSL
-      keepAliveInterval: 60, // Intervalo maior para manter a conexão
-    });
-  }
-});
-
 // Inicialização da animação do ripple
 let rippleCanvas, rippleCtx;
 let rippleAnimationId;
@@ -229,3 +228,10 @@ function addRipple() {
 }
 
 setupRippleCanvas();
+
+// Reconectar automaticamente ao cliente MQTT quando a página voltar a ser visível
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) {
+    reconnectMQTT();
+  }
+});
