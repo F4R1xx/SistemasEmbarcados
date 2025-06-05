@@ -34,11 +34,16 @@ let reconnectAttempts = 0;
 // Função de reconexão
 function reconnectMQTT() {
   console.log(`Tentando reconectar ao broker... Tentativa ${reconnectAttempts + 1}`);
+  statusText.textContent = "Reconectando..."; // Atualiza a mensagem de status para "Reconectando"
+  
   client.connect({
     onSuccess: () => {
       console.log("Reconectado ao broker");
       reconnectAttempts = 0; // Reseta a contagem de tentativas de reconexão
       client.subscribe(topicStatus);
+      statusText.textContent = "Conectado"; // Atualiza para "Conectado" quando a conexão for bem-sucedida
+      container.classList.add("ligado");
+      container.classList.remove("desligado");
     },
     onFailure: (error) => {
       console.log(`Falha na reconexão: ${error.errorMessage}`);
@@ -54,7 +59,7 @@ function reconnectMQTT() {
 client.onConnectionLost = (responseObject) => {
   if (responseObject.errorCode !== 0) {
     console.log("Conexão perdida: " + responseObject.errorMessage);
-    statusText.textContent = "Conexão perdida";
+    statusText.textContent = "Conexão perdida"; // Atualiza para "Conexão perdida"
     container.classList.remove("ligado");
     container.classList.add("desligado");
     reconnectMQTT(); // Inicia o processo de reconexão
@@ -88,6 +93,9 @@ client.connect({
   onSuccess: () => {
     console.log("Conectado ao broker");
     client.subscribe(topicStatus);
+    statusText.textContent = "Conectado"; // Exibe "Conectado" após a conexão inicial ser bem-sucedida
+    container.classList.add("ligado");
+    container.classList.remove("desligado");
   },
   useSSL: true,
   keepAliveInterval: 60 // Intervalo de keep alive aumentado
